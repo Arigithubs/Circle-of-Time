@@ -1,6 +1,5 @@
 // Mystical Day Planner JavaScript
 
-// Task data structure
 class Task {
     constructor(name, duration, color, time) {
         this.name = name;
@@ -10,7 +9,6 @@ class Task {
     }
 }
 
-// DOM Elements
 const circle = document.getElementById('circle');
 const colorPalette = document.getElementById('colorPalette');
 const taskForm = document.getElementById('taskForm');
@@ -20,13 +18,9 @@ const taskColorInput = document.getElementById('taskColor');
 const saveButton = document.getElementById('saveButton');
 const cancelButton = document.getElementById('cancelButton');
 
-// Other Variables
 let tasks = [];
 let selectedTask = null;
 
-// Functions
-
-// Function to render tasks on the circle
 function renderTasks() {
     circle.innerHTML = '';
 
@@ -41,20 +35,17 @@ function renderTasks() {
         taskContent.innerHTML = `<span>${task.name}</span><span>${task.duration}h</span>`;
         taskElement.appendChild(taskContent);
 
-        // Add tooltip with task details
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
         tooltip.textContent = `${task.name} - ${task.duration} hours`;
         taskElement.appendChild(tooltip);
 
-        // Add click event to edit task
         taskElement.addEventListener('click', () => openTaskForm(task));
 
         circle.appendChild(taskElement);
     });
 }
 
-// Function to open the task form for adding/editing tasks
 function openTaskForm(task = null) {
     selectedTask = task;
 
@@ -70,20 +61,17 @@ function openTaskForm(task = null) {
         saveButton.textContent = 'Add';
     }
 
-    taskForm.style.display = 'block';
+    taskForm.style.display = 'flex';
 }
 
-// Function to close the task form
 function closeTaskForm() {
     taskForm.style.display = 'none';
 }
 
-// Event listeners for buttons
 document.getElementById('addTaskButton').addEventListener('click', openTaskForm);
 cancelButton.addEventListener('click', closeTaskForm);
 saveButton.addEventListener('click', saveTask);
 
-// Function to save a task (add or update)
 function saveTask() {
     const name = taskNameInput.value.trim();
     const duration = parseFloat(taskDurationInput.value);
@@ -108,5 +96,4 @@ function saveTask() {
     closeTaskForm();
 }
 
-// Initial rendering of tasks
 renderTasks();
