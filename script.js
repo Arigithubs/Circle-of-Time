@@ -7,6 +7,10 @@ class Task {
         this.color = color;
         this.time = time;
     }
+
+    getDescription() {
+        return `${this.name} - ${this.duration} hours at ${this.time}:00`;
+    }
 }
 
 const circle = document.getElementById('circle');
@@ -38,7 +42,7 @@ function renderTasks() {
 
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
-        tooltip.textContent = `${task.name} - ${task.duration} hours at ${task.time}:00`;
+        tooltip.textContent = task.getDescription();
         taskElement.appendChild(tooltip);
 
         taskElement.addEventListener('click', () => openTaskForm(task));
@@ -65,6 +69,7 @@ function openTaskForm(task = null) {
     }
 
     taskForm.style.display = 'flex';
+    taskForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
 }
 
 function closeTaskForm() {
