@@ -33,3 +33,21 @@ body {
     display: none;
     /* Styles for the task form */
 }
+
+.color-palette {
+    display: flex;
+    margin-top: 10px;
+}
+
+.color-option {
+    width: 20px;
+    height: 20px;
+    margin: 0 5px;
+    cursor: pointer;
+    border-radius: 50%;
+}
+
+/* Highlight selected color */
+.color-option.selected {
+    border: 2px solid #ecf0f1;
+}
