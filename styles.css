@@ -23,6 +23,7 @@ body {
     background-color: #fff;
     border: 2px solid #3498db;
     overflow: hidden;
+    margin-bottom: 20px;
 }
 
 .task {
@@ -33,6 +34,12 @@ body {
     transform-origin: 100% 50%;
     transform: translateX(-50%) translateY(-50%) rotate(0deg);
     cursor: pointer;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.8);
+}
+
+.task:hover {
+    transform: translateX(-50%) translateY(-50%) rotate(0deg) scale(1.1);
 }
 
 .task-content {
@@ -45,7 +52,7 @@ body {
 
 .tooltip {
     position: absolute;
-    background-color: rgba(0, 0, 0, 0.7);
+    background-color: rgba(52, 152, 219, 0.8);
     color: #fff;
     padding: 5px;
     border-radius: 3px;
@@ -57,41 +64,50 @@ body {
 .color-palette {
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 .color-option {
-    width: 20px;
-    height: 20px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
-    margin: 0 5px;
+    margin: 0 10px;
     cursor: pointer;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.8);
+}
+
+.color-option:hover {
+    transform: scale(1.1);
 }
 
 .task-form {
     display: none;
     flex-direction: column;
     align-items: center;
-    margin-top: 20px;
 }
 
 label {
     margin-bottom: 5px;
+    font-weight: bold;
 }
 
 input {
     margin-bottom: 10px;
-    padding: 5px;
-    width: 150px;
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #3498db;
+    border-radius: 5px;
 }
 
 .btn {
     background-color: #3498db;
     color: #fff;
-    padding: 5px 15px;
+    padding: 10px 20px;
     border: none;
     cursor: pointer;
-    margin: 5px;
+    margin: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.8);
 }
 
 .btn:hover {
