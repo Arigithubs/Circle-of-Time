@@ -1,179 +1,112 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const circle = document.getElementById('circle');
-    const taskForm = document.getElementById('taskForm');
-    const taskNameInput = document.getElementById('taskName');
-    const taskDurationInput = document.getElementById('taskDuration');
-    const taskTimeInput = document.getElementById('taskTime');
-    const taskColorInput = document.getElementById('taskColor');
-    const colorPalette = document.getElementById('colorPalette');
-    const saveButton = document.getElementById('saveButton');
-    const cancelButton = document.getElementById('cancelButton');
+// Mystical Day Planner JavaScript
 
-    let tasks = JSON.parse(localStorage.getItem('tasks')) || [];
+// Task data structure
+class Task {
+    constructor(name, duration, color, time) {
+        this.name = name;
+        this.duration = duration;
+        this.color = color;
+        this.time = time;
+    }
+}
 
-    const saveTasksToLocalStorage = () =>
-        localStorage.setItem('tasks', JSON.stringify(tasks));
+// DOM Elements
+const circle = document.getElementById('circle');
+const colorPalette = document.getElementById('colorPalette');
+const taskForm = document.getElementById('taskForm');
+const taskNameInput = document.getElementById('taskName');
+const taskDurationInput = document.getElementById('taskDuration');
+const taskColorInput = document.getElementById('taskColor');
+const saveButton = document.getElementById('saveButton');
+const cancelButton = document.getElementById('cancelButton');
 
-    const renderTasks = () => {
-        circle.innerHTML = '';
-        tasks.forEach(task => {
-            const taskElement = createTaskElement(task);
-            taskElement.addEventListener('click', () => editTask(task));
-            taskElement.addEventListener('contextmenu', event => deleteTask(event, task));
-            circle.appendChild(taskElement);
-        });
+// Other Variables
+let tasks = [];
+let selectedTask = null;
 
-        saveTasksToLocalStorage();
-    };
+// Functions
 
-    const createTaskElement = task => {
+// Function to render tasks on the circle
+function renderTasks() {
+    circle.innerHTML = '';
+
+    tasks.forEach((task) => {
         const taskElement = document.createElement('div');
-        taskElement.classList.add('task');
+        taskElement.className = 'task';
         taskElement.style.backgroundColor = task.color;
+        taskElement.style.transform = `rotate(${(task.time / 24) * 360}deg) translateX(150px)`;
+
         const taskContent = document.createElement('div');
-        taskContent.classList.add('task-content');
-        taskContent.innerHTML = `<span>${task.name}</span><br><span>${task.duration} hours at ${task.time}</span>`;
+        taskContent.className = 'task-content';
+        taskContent.innerHTML = `<span>${task.name}</span><span>${task.duration}h</span>`;
         taskElement.appendChild(taskContent);
-        positionTaskOnCircle(taskElement, task);
-        return taskElement;
-    };
 
-    const positionTaskOnCircle = (taskElement, task) => {
-        const rotateDegree = (task.time / 24) * 360;
-        taskElement.style.transform = `rotate(${rotateDegree}deg)`;
-    };
+        // Add tooltip with task details
+        const tooltip = document.createElement('div');
+        tooltip.className = 'tooltip';
+        tooltip.textContent = `${task.name} - ${task.duration} hours`;
+        taskElement.appendChild(tooltip);
 
-    const openTaskForm = () => {
-        clearForm();
-        taskForm.style.display = 'block';
-    };
+        // Add click event to edit task
+        taskElement.addEventListener('click', () => openTaskForm(task));
 
-    const closeTaskForm = () => {
-        taskForm.style.display = 'none';
-    };
-
-    const saveTask = () => {
-        const { name, duration, time, color } = getInputValues();
-
-        if (isValidTask(name, duration, time, color)) {
-            const newTask = { name, duration, time, color };
-            tasks.push(newTask);
-            animateTask(newTask, 'add');
-            renderTasks();
-            closeTaskForm();
-        } else {
-            alert('Please fill in all fields with valid values.');
-        }
-    };
-
-    const editTask = task => {
-        setInputValues(task);
-        openTaskForm();
-
-        saveButton.removeEventListener('click', saveTask);
-        saveButton.addEventListener('click', () => saveEditedTask(task));
-    };
-
-    const saveEditedTask = task => {
-        const { name, duration, time, color } = getInputValues();
-
-        if (isValidTask(name, duration, time, color)) {
-            task.name = name;
-            task.duration = duration;
-            task.time = time;
-            task.color = color;
-            renderTasks();
-            closeTaskForm();
-        } else {
-            alert('Please fill in all fields with valid values.');
-        }
-    };
-
-    const deleteTask = (event, task) => {
-        event.preventDefault();
-        const confirmDelete = confirm(`Are you sure you want to delete the task "${task.name}"?`);
-        if (confirmDelete) {
-            animateTask(task, 'remove');
-            tasks = tasks.filter(t => t !== task);
-            renderTasks();
-        }
-    };
-
-    const animateTask = (task, action) => {
-        const taskElement = createTaskElement(task);
-        taskElement.style.transition = 'transform 0.3s ease-in-out, opacity 0.3s ease-in-out';
-        if (action === 'add') {
-            taskElement.style.transform = 'scale(1.2)';
-            setTimeout(() => {
-                taskElement.style.transform = 'scale(1)';
-            }, 10);
-        } else if (action === 'remove') {
-            taskElement.style.opacity = '0';
-            setTimeout(() => {
-                taskElement.remove();
-            }, 300);
-        }
         circle.appendChild(taskElement);
-    };
-
-    colorPalette.addEventListener('click', event => {
-        const colorOption = event.target.closest('.color-option');
-        if (colorOption) {
-            taskColorInput.value = colorOption.dataset.color;
-            selectColorOption(colorOption.dataset.color);
-        }
     });
+}
 
-    if (saveButton) {
-        saveButton.addEventListener('click', saveTask);
+// Function to open the task form for adding/editing tasks
+function openTaskForm(task = null) {
+    selectedTask = task;
+
+    if (task) {
+        taskNameInput.value = task.name;
+        taskDurationInput.value = task.duration;
+        taskColorInput.value = task.color;
+        saveButton.textContent = 'Update';
+    } else {
+        taskNameInput.value = '';
+        taskDurationInput.value = '';
+        taskColorInput.value = '#3498db';
+        saveButton.textContent = 'Add';
     }
 
-    if (cancelButton) {
-        cancelButton.addEventListener('click', closeTaskForm);
+    taskForm.style.display = 'block';
+}
+
+// Function to close the task form
+function closeTaskForm() {
+    taskForm.style.display = 'none';
+}
+
+// Event listeners for buttons
+document.getElementById('addTaskButton').addEventListener('click', openTaskForm);
+cancelButton.addEventListener('click', closeTaskForm);
+saveButton.addEventListener('click', saveTask);
+
+// Function to save a task (add or update)
+function saveTask() {
+    const name = taskNameInput.value.trim();
+    const duration = parseFloat(taskDurationInput.value);
+    const color = taskColorInput.value;
+
+    if (name === '' || isNaN(duration) || duration <= 0) {
+        alert('Please enter valid task details.');
+        return;
+    }
+
+    const time = selectedTask ? selectedTask.time : Math.floor(Math.random() * 24);
+    const newTask = new Task(name, duration, color, time);
+
+    if (selectedTask) {
+        const index = tasks.indexOf(selectedTask);
+        tasks[index] = newTask;
+    } else {
+        tasks.push(newTask);
     }
 
     renderTasks();
+    closeTaskForm();
+}
 
-    const getInputValues = () => ({
-        name: taskNameInput.value,
-        duration: parseFloat(taskDurationInput.value),
-        time: parseFloat(taskTimeInput.value),
-        color: taskColorInput.value,
-    });
-
-    const setInputValues = task => {
-        taskNameInput.value = task.name;
-        taskDurationInput.value = task.duration;
-        taskTimeInput.value = task.time;
-        taskColorInput.value = task.color;
-        selectColorOption(task.color);
-    };
-
-    const isValidTask = (name, duration, time, color) =>
-        name && !isNaN(duration) && duration > 0 && isValidTime(time) && color;
-
-    const isValidTime = time => !isNaN(time) && time >= 0 && time <= 24;
-
-    const clearForm = () => {
-        taskNameInput.value = '';
-        taskDurationInput.value = '';
-        taskTimeInput.value = '';
-        taskColorInput.value = '#e74c3c'; // Default color
-        selectColorOption('#e74c3c');
-    };
-
-    const selectColorOption = color => {
-        const selectedColor = colorPalette.querySelector('.selected');
-        if (selectedColor) {
-            selectedColor.classList.remove('selected');
-        }
-
-        const colorOption = Array.from(colorPalette.children).find(option =>
-            option.dataset.color === color
-        );
-
-        if (colorOption) {
-            colorOption.classList.add('selected');
-        }
-    };
-});
+// Initial rendering of tasks
+renderTasks();
