@@ -15,6 +15,7 @@ const taskForm = document.getElementById('taskForm');
 const taskNameInput = document.getElementById('taskName');
 const taskDurationInput = document.getElementById('taskDuration');
 const taskColorInput = document.getElementById('taskColor');
+const taskTimeInput = document.getElementById('taskTime');
 const saveButton = document.getElementById('saveButton');
 const cancelButton = document.getElementById('cancelButton');
 
@@ -37,7 +38,7 @@ function renderTasks() {
 
         const tooltip = document.createElement('div');
         tooltip.className = 'tooltip';
-        tooltip.textContent = `${task.name} - ${task.duration} hours`;
+        tooltip.textContent = `${task.name} - ${task.duration} hours at ${task.time}:00`;
         taskElement.appendChild(tooltip);
 
         taskElement.addEventListener('click', () => openTaskForm(task));
@@ -53,11 +54,13 @@ function openTaskForm(task = null) {
         taskNameInput.value = task.name;
         taskDurationInput.value = task.duration;
         taskColorInput.value = task.color;
+        taskTimeInput.value = task.time;
         saveButton.textContent = 'Update';
     } else {
         taskNameInput.value = '';
         taskDurationInput.value = '';
         taskColorInput.value = '#3498db';
+        taskTimeInput.value = '';
         saveButton.textContent = 'Add';
     }
 
@@ -76,13 +79,13 @@ function saveTask() {
     const name = taskNameInput.value.trim();
     const duration = parseFloat(taskDurationInput.value);
     const color = taskColorInput.value;
+    const time = parseInt(taskTimeInput.value, 10);
 
-    if (name === '' || isNaN(duration) || duration <= 0) {
+    if (name === '' || isNaN(duration) || duration <= 0 || isNaN(time) || time < 0 || time > 23) {
         alert('Please enter valid task details.');
         return;
     }
 
-    const time = selectedTask ? selectedTask.time : Math.floor(Math.random() * 24);
     const newTask = new Task(name, duration, color, time);
 
     if (selectedTask) {
