@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('taskForm');
     const taskNameInput = document.getElementById('taskName');
     const taskDurationInput = document.getElementById('taskDuration');
+    const taskTimeInput = document.getElementById('taskTime');
     const taskColorInput = document.getElementById('taskColor');
     const colorPalette = document.getElementById('colorPalette');
     const colorOptions = colorPalette.querySelectorAll('.color-option');
@@ -13,8 +14,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Tasks (Loaded from local storage or default)
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [
-        { name: 'Walk', duration: 2, color: '#e74c3c' },
-        // Add more sample tasks as needed
+        { name: 'Walk the dog', duration: 2, time: '10:00 AM', color: '#e74c3c' },
+        { name: 'Read a book', duration: 1, time: '2:00 PM', color: '#3498db' },
+        { name: 'Work on project', duration: 3, time: '4:30 PM', color: '#2ecc71' },
+        { name: 'Take a nap', duration: 1, time: '12:30 PM', color: '#f39c12' },
+        { name: 'Exercise', duration: 1.5, time: '8:00 AM', color: '#9b59b6' },
     ];
 
     // Save tasks to local storage
@@ -27,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
         tasks.forEach(task => {
             const taskElement = createTaskElement(task);
             taskElement.addEventListener('click', () => editTask(task));
+            taskElement.addEventListener('contextmenu', event => deleteTask(event, task));
             circle.appendChild(taskElement);
         });
 
@@ -39,21 +44,33 @@ document.addEventListener('DOMContentLoaded', () => {
         taskElement.classList.add('task');
         taskElement.style.backgroundColor = task.color;
         taskElement.style.transform = `rotate(${(task.duration / 24) * 360}deg)`;
+        taskElement.style.width = `${Math.max(task.duration * 4, 20)}px`; // Adjust task width
+
+        const taskContent = document.createElement('div');
+        taskContent.classList.add('task-content');
+        taskContent.innerHTML = `<span>${task.name}</span><br><span class="task-time">${task.time}</span>`;
+        taskElement.appendChild(taskContent);
+
         return taskElement;
     };
 
     // Open the task form
-    const openTaskForm = () => taskForm.style.display = 'block';
+    const openTaskForm = () => {
+        clearForm();
+        taskForm.style.display = 'block';
+    };
 
     // Close the task form
-    const closeTaskForm = () => taskForm.style.display = 'none';
+    const closeTaskForm = () => {
+        taskForm.style.display = 'none';
+    };
 
     // Save a new task
     const saveTask = () => {
-        const { name, duration, color } = getInputValues();
+        const { name, duration, time, color } = getInputValues();
 
-        if (isValidTask(name, duration, color)) {
-            const newTask = { name, duration, color };
+        if (isValidTask(name, duration, time, color)) {
+            const newTask = { name, duration, time, color };
             tasks.push(newTask);
             renderTasks();
             closeTaskForm();
@@ -65,7 +82,6 @@ document.addEventListener('DOMContentLoaded', () => {
     // Edit an existing task
     const editTask = task => {
         setInputValues(task);
-        selectColorOption(task.color);
         openTaskForm();
 
         saveButton.removeEventListener('click', saveTask);
@@ -74,11 +90,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Save edits to an existing task
     const saveEditedTask = task => {
-        const { name, duration, color } = getInputValues();
+        const { name, duration, time, color } = getInputValues();
 
-        if (isValidTask(name, duration, color)) {
+        if (isValidTask(name, duration, time, color)) {
             task.name = name;
             task.duration = duration;
+            task.time = time;
             task.color = color;
             renderTasks();
             closeTaskForm();
@@ -88,23 +105,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     // Delete a task
-    const deleteTask = task => {
-        const taskIndex = tasks.indexOf(task);
-        if (taskIndex !== -1) {
-            tasks.splice(taskIndex, 1);
-            renderTasks();
+    const deleteTask = (event, task) => {
+        event.preventDefault();
+        const confirmDelete = confirm(`Are you sure you want to delete the task "${task.name}"?`);
+        if (confirmDelete) {
+            const taskIndex = tasks.indexOf(task);
+            if (taskIndex !== -1) {
+                tasks.splice(taskIndex, 1);
+                renderTasks();
+            }
         }
     };
 
-    // Right-click to delete a task
-    circle.addEventListener('contextmenu', event => {
-        event.preventDefault();
-        const clickedTask = event.target.closest('.task');
-        if (clickedTask) {
-            const task = tasks.find(t => t.color === clickedTask.style.backgroundColor);
-            deleteTask(task);
-        }
-    });
+    // Dynamically adjust color palette based on existing task colors
+    const updateColorPalette = () => {
+        const usedColors = tasks.map(task => task.color);
+        colorOptions.forEach(option => {
+            const color = option.dataset.color;
+            option.style.display = usedColors.includes(color) ? 'none' : 'block';
+        });
+    };
 
     // Highlight the selected color option
     const selectColorOption = color => {
@@ -148,16 +168,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const getInputValues = () => ({
         name: taskNameInput.value,
-        duration: parseInt(taskDurationInput.value),
+        duration: parseFloat(taskDurationInput.value),
+        time: taskTimeInput.value,
         color: taskColorInput.value
     });
 
     const setInputValues = task => {
         taskNameInput.value = task.name;
         taskDurationInput.value = task.duration;
+        taskTimeInput.value = task.time;
         taskColorInput.value = task.color;
+        selectColorOption(task.color);
     };
 
-    const isValidTask = (name, duration, color) =>
-        name && !isNaN(duration) && duration > 0 && color;
+    const isValidTask = (name, duration, time, color) =>
+        name && !isNaN(duration) && duration > 0 && isValidTime(time) && color;
+
+    const isValidTime = time => {
+        // Simple time validation, you can enhance it further
+        const regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]$/;
+        return regex.test(time);
+    };
+
+    const clearForm = () => {
+        taskNameInput.value = '';
+        taskDurationInput.value = '';
+        taskTimeInput.value = '';
+        taskColorInput.value = colorOptions[0].dataset.color; // Default to the first color option
+        selectColorOption(colorOptions[0].dataset.color);
+    };
+
+    // Dynamically adjust color palette on load
+    updateColorPalette();
 });
