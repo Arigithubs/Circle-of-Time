@@ -7,12 +7,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskColorInput = document.getElementById('taskColor');
     const colorPalette = document.getElementById('colorPalette');
     const colorOptions = colorPalette.querySelectorAll('.color-option');
+    const addTaskButton = document.getElementById('addTaskButton');
+    const cancelButton = document.getElementById('cancelButton');
+    const saveButton = document.getElementById('saveButton');
 
     // Tasks (Loaded from local storage or default)
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [
         { name: 'Walk', duration: 2, color: '#e74c3c' },
         // Add more sample tasks as needed
     ];
+
+    // Save tasks to local storage
+    const saveTasksToLocalStorage = () =>
+        localStorage.setItem('tasks', JSON.stringify(tasks));
 
     // Render tasks on the circle
     const renderTasks = () => {
@@ -122,13 +129,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Event listeners for buttons
-    const addTaskButton = document.getElementById('addTaskButton');
-    const cancelButton = document.getElementById('cancelButton');
-    
-    // Find the 'saveButton' element after the 'taskForm' is defined
-    const saveButton = document.getElementById('saveButton');
-
-    // Check if 'saveButton' is found before adding the event listener
     if (addTaskButton) {
         addTaskButton.addEventListener('click', openTaskForm);
     }
@@ -160,7 +160,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const isValidTask = (name, duration, color) =>
         name && !isNaN(duration) && duration > 0 && color;
-
-    const saveTasksToLocalStorage = () =>
-        localStorage.setItem('tasks', JSON.stringify(tasks));
 });
