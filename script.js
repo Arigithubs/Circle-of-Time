@@ -8,7 +8,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const colorPalette = document.getElementById('colorPalette');
     const colorOptions = colorPalette.querySelectorAll('.color-option');
 
-    let tasks = [
+    // Load tasks from local storage or use default tasks
+    let tasks = JSON.parse(localStorage.getItem('tasks')) || [
         { name: 'Walk', duration: 2, color: '#e74c3c' },
         // Add more sample tasks as needed
     ];
@@ -23,6 +24,9 @@ document.addEventListener('DOMContentLoaded', function () {
             taskElement.addEventListener('click', () => editTask(task));
             circle.appendChild(taskElement);
         });
+
+        // Save tasks to local storage
+        localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
     function openTaskForm() {
@@ -75,11 +79,31 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function deleteTask(task) {
+        const taskIndex = tasks.indexOf(task);
+        if (taskIndex !== -1) {
+            tasks.splice(taskIndex, 1);
+            renderTasks();
+        }
+    }
+
+    circle.addEventListener('contextmenu', function (event) {
+        event.preventDefault(); // Prevent the default context menu
+        const clickedTask = event.target.closest('.task');
+        if (clickedTask) {
+            const task = tasks.find(t => t.color === clickedTask.style.backgroundColor);
+            deleteTask(task);
+        }
+    });
+
     function selectColorOption(color) {
         colorOptions.forEach(option => {
             option.classList.remove('selected');
             if (option.dataset.color === color) {
                 option.classList.add('selected');
+                option.style.transform = 'scale(1.2)';
+            } else {
+                option.style.transform = 'scale(1)';
             }
         });
     }
