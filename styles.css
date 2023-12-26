@@ -23,6 +23,7 @@ body {
     background-color: #34495e;
     border-radius: 50%;
     overflow: hidden;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
 }
 
 .task {
@@ -43,6 +44,11 @@ body {
     margin: 0 5px;
     cursor: pointer;
     border-radius: 50%;
+    transition: background-color 0.3s ease;
+}
+
+.color-option:hover {
+    transform: scale(1.2);
 }
 
 .color-option.selected {
