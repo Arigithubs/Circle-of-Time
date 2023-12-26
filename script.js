@@ -3,6 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskForm = document.getElementById('taskForm');
     const taskNameInput = document.getElementById('taskName');
     const taskDurationInput = document.getElementById('taskDuration');
+    const taskTimeInput = document.getElementById('taskTime');
     const taskColorInput = document.getElementById('taskColor');
     const colorPalette = document.getElementById('colorPalette');
     const saveButton = document.getElementById('saveButton');
@@ -31,9 +32,15 @@ document.addEventListener('DOMContentLoaded', () => {
         taskElement.style.backgroundColor = task.color;
         const taskContent = document.createElement('div');
         taskContent.classList.add('task-content');
-        taskContent.innerHTML = `<span>${task.name}</span><br><span>${task.duration} hours</span>`;
+        taskContent.innerHTML = `<span>${task.name}</span><br><span>${task.duration} hours at ${task.time}</span>`;
         taskElement.appendChild(taskContent);
+        positionTaskOnCircle(taskElement, task);
         return taskElement;
+    };
+
+    const positionTaskOnCircle = (taskElement, task) => {
+        const rotateDegree = (task.time / 24) * 360;
+        taskElement.style.transform = `rotate(${rotateDegree}deg)`;
     };
 
     const openTaskForm = () => {
@@ -46,10 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const saveTask = () => {
-        const { name, duration, color } = getInputValues();
+        const { name, duration, time, color } = getInputValues();
 
-        if (isValidTask(name, duration, color)) {
-            const newTask = { name, duration, color };
+        if (isValidTask(name, duration, time, color)) {
+            const newTask = { name, duration, time, color };
             tasks.push(newTask);
             animateTask(newTask, 'add');
             renderTasks();
@@ -68,11 +75,12 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const saveEditedTask = task => {
-        const { name, duration, color } = getInputValues();
+        const { name, duration, time, color } = getInputValues();
 
-        if (isValidTask(name, duration, color)) {
+        if (isValidTask(name, duration, time, color)) {
             task.name = name;
             task.duration = duration;
+            task.time = time;
             task.color = color;
             renderTasks();
             closeTaskForm();
@@ -129,22 +137,27 @@ document.addEventListener('DOMContentLoaded', () => {
     const getInputValues = () => ({
         name: taskNameInput.value,
         duration: parseFloat(taskDurationInput.value),
+        time: parseFloat(taskTimeInput.value),
         color: taskColorInput.value,
     });
 
     const setInputValues = task => {
         taskNameInput.value = task.name;
         taskDurationInput.value = task.duration;
+        taskTimeInput.value = task.time;
         taskColorInput.value = task.color;
         selectColorOption(task.color);
     };
 
-    const isValidTask = (name, duration, color) =>
-        name && !isNaN(duration) && duration > 0 && color;
+    const isValidTask = (name, duration, time, color) =>
+        name && !isNaN(duration) && duration > 0 && isValidTime(time) && color;
+
+    const isValidTime = time => !isNaN(time) && time >= 0 && time <= 24;
 
     const clearForm = () => {
         taskNameInput.value = '';
         taskDurationInput.value = '';
+        taskTimeInput.value = '';
         taskColorInput.value = '#e74c3c'; // Default color
         selectColorOption('#e74c3c');
     };
