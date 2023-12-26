@@ -8,6 +8,7 @@
 </head>
 <body>
     <div class="container">
+        <h1>Mystical Day Planner</h1>
         <div class="circle-of-time" id="circle">
             <!-- Tasks will be dynamically added here -->
         </div>
@@ -22,13 +23,14 @@
         </div>
 
         <div class="task-form" id="taskForm">
-            <label for="taskName" style="color: #3498db;">Task Name:</label>
+            <h2>Add/Edit Task</h2>
+            <label for="taskName">Task Name:</label>
             <input type="text" id="taskName" required>
-            <label for="taskDuration" style="color: #3498db;">Task Duration (hours):</label>
+            <label for="taskDuration">Task Duration (hours):</label>
             <input type="number" id="taskDuration" required>
-            <label for="taskColor" style="color: #3498db;">Task Color:</label>
+            <label for="taskColor">Task Color:</label>
             <input type="color" id="taskColor" value="#3498db">
-            <label for="taskTime" style="color: #3498db;">Task Time (24-hour format):</label>
+            <label for="taskTime">Task Time (24-hour format):</label>
             <input type="number" id="taskTime" min="0" max="23" required>
             <button id="saveButton" class="btn">Save</button>
             <button id="cancelButton" class="btn">Cancel</button>
