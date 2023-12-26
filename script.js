@@ -122,13 +122,21 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // Event listeners for buttons
-    document.getElementById('addTaskButton').addEventListener('click', openTaskForm);
-    document.getElementById('cancelButton').addEventListener('click', closeTaskForm);
-
+    const addTaskButton = document.getElementById('addTaskButton');
+    const cancelButton = document.getElementById('cancelButton');
+    
     // Find the 'saveButton' element after the 'taskForm' is defined
     const saveButton = document.getElementById('saveButton');
 
     // Check if 'saveButton' is found before adding the event listener
+    if (addTaskButton) {
+        addTaskButton.addEventListener('click', openTaskForm);
+    }
+
+    if (cancelButton) {
+        cancelButton.addEventListener('click', closeTaskForm);
+    }
+
     if (saveButton) {
         saveButton.addEventListener('click', saveTask);
     }
