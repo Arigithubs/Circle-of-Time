@@ -5,7 +5,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const taskNameInput = document.getElementById('taskName');
     const taskDurationInput = document.getElementById('taskDuration');
     const taskColorInput = document.getElementById('taskColor');
-    const saveButton = document.getElementById('saveButton');
     const colorPalette = document.getElementById('colorPalette');
     const colorOptions = colorPalette.querySelectorAll('.color-option');
 
@@ -125,7 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
     // Event listeners for buttons
     document.getElementById('addTaskButton').addEventListener('click', openTaskForm);
     document.getElementById('cancelButton').addEventListener('click', closeTaskForm);
-    saveButton.addEventListener('click', saveTask);
+
+    // Find the 'saveButton' element after the 'taskForm' is defined
+    const saveButton = document.getElementById('saveButton');
+
+    // Check if 'saveButton' is found before adding the event listener
+    if (saveButton) {
+        saveButton.addEventListener('click', saveTask);
+    }
 
     // Initial rendering of tasks
     renderTasks();
