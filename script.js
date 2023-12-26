@@ -43,15 +43,28 @@ document.addEventListener('DOMContentLoaded', () => {
         const taskElement = document.createElement('div');
         taskElement.classList.add('task');
         taskElement.style.backgroundColor = task.color;
-        taskElement.style.transform = `rotate(${(task.duration / 24) * 360}deg)`;
-        taskElement.style.width = `${Math.max(task.duration * 4, 20)}px`; // Adjust task width
-
+        const rotateDegree = calculateRotation(task);
+        taskElement.style.transform = `rotate(${rotateDegree}deg)`;
         const taskContent = document.createElement('div');
         taskContent.classList.add('task-content');
         taskContent.innerHTML = `<span>${task.name}</span><br><span class="task-time">${task.time}</span>`;
         taskElement.appendChild(taskContent);
-
         return taskElement;
+    };
+
+    // Calculate rotation to avoid task overlap
+    const calculateRotation = task => {
+        const existingRotations = tasks.map(t => (t.duration / 24) * 360);
+        const taskRotation = (task.duration / 24) * 360;
+        let rotateDegree = taskRotation;
+        let index = 1;
+
+        while (existingRotations.includes(rotateDegree)) {
+            rotateDegree = taskRotation + index * 5; // Adjust for 5-degree increments
+            index++;
+        }
+
+        return rotateDegree;
     };
 
     // Open the task form
@@ -165,12 +178,11 @@ document.addEventListener('DOMContentLoaded', () => {
     renderTasks();
 
     // Helper functions
-
     const getInputValues = () => ({
         name: taskNameInput.value,
         duration: parseFloat(taskDurationInput.value),
         time: taskTimeInput.value,
-        color: taskColorInput.value
+        color: taskColorInput.value,
     });
 
     const setInputValues = task => {
