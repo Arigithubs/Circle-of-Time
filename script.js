@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', function () {
+    // Elements
     const circle = document.getElementById('circle');
     const taskForm = document.getElementById('taskForm');
     const taskNameInput = document.getElementById('taskName');
@@ -8,12 +9,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const colorPalette = document.getElementById('colorPalette');
     const colorOptions = colorPalette.querySelectorAll('.color-option');
 
-    // Load tasks from local storage or use default tasks
+    // Tasks (Loaded from local storage or default)
     let tasks = JSON.parse(localStorage.getItem('tasks')) || [
         { name: 'Walk', duration: 2, color: '#e74c3c' },
         // Add more sample tasks as needed
     ];
 
+    // Function to render tasks on the circle
     function renderTasks() {
         circle.innerHTML = '';
         tasks.forEach(task => {
@@ -29,14 +31,17 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('tasks', JSON.stringify(tasks));
     }
 
+    // Function to open the task form
     function openTaskForm() {
         taskForm.style.display = 'block';
     }
 
+    // Function to close the task form
     function closeTaskForm() {
         taskForm.style.display = 'none';
     }
 
+    // Function to save a new task
     function saveTask() {
         const taskName = taskNameInput.value;
         const taskDuration = parseInt(taskDurationInput.value);
@@ -52,6 +57,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Function to edit an existing task
     function editTask(task) {
         taskNameInput.value = task.name;
         taskDurationInput.value = task.duration;
@@ -63,6 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
         saveButton.addEventListener('click', () => saveEditedTask(task));
     }
 
+    // Function to save edits to an existing task
     function saveEditedTask(task) {
         const updatedName = taskNameInput.value;
         const updatedDuration = parseInt(taskDurationInput.value);
@@ -79,6 +86,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Function to delete a task
     function deleteTask(task) {
         const taskIndex = tasks.indexOf(task);
         if (taskIndex !== -1) {
@@ -87,6 +95,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Event listener for right-click to delete a task
     circle.addEventListener('contextmenu', function (event) {
         event.preventDefault(); // Prevent the default context menu
         const clickedTask = event.target.closest('.task');
@@ -96,6 +105,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Function to highlight the selected color option
     function selectColorOption(color) {
         colorOptions.forEach(option => {
             option.classList.remove('selected');
@@ -108,6 +118,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    // Event listener for clicking a color option
     colorPalette.addEventListener('click', function (event) {
         const colorOption = event.target.closest('.color-option');
         if (colorOption) {
@@ -116,9 +127,11 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
+    // Event listeners for buttons
     document.getElementById('addTaskButton').addEventListener('click', openTaskForm);
     document.getElementById('cancelButton').addEventListener('click', closeTaskForm);
     saveButton.addEventListener('click', saveTask);
 
+    // Initial rendering of tasks
     renderTasks();
 });
