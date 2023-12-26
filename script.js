@@ -76,7 +76,25 @@ function closeTaskForm() {
     taskForm.style.display = 'none';
 }
 
-document.getElementById('addTaskButton').addEventListener('click', openTaskForm);
+function handleContextMenu(event) {
+    event.preventDefault();
+    
+    const boundingRect = circle.getBoundingClientRect();
+    const centerX = boundingRect.left + boundingRect.width / 2;
+    const centerY = boundingRect.top + boundingRect.height / 2;
+    
+    const angleRad = Math.atan2(event.clientY - centerY, event.clientX - centerX);
+    let angleDeg = (angleRad * 180) / Math.PI;
+
+    if (angleDeg < 0) {
+        angleDeg += 360;
+    }
+
+    const time = Math.floor((angleDeg / 360) * 24);
+    openTaskForm({ name: '', duration: '', color: '#3498db', time });
+}
+
+circle.addEventListener('contextmenu', handleContextMenu);
 cancelButton.addEventListener('click', closeTaskForm);
 saveButton.addEventListener('click', saveTask);
 
